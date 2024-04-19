@@ -1,0 +1,43 @@
+name: Build Qt Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            qt_version: '6.6.2'
+          - os: macos-latest
+            qt_version: '6.6.2'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Qt environment
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: ${{ matrix.qt_version }}
+
+    - name: Create Build Directory
+      run: mkdir build
+
+    - name: Configure CMake
+      working-directory: ./build
+      run: cmake .. -DCMAKE_PREFIX_PATH=${{ env.QT_INSTALL_DIR }}
+
+    - name: Build
+      working-directory: ./build
+      run: cmake --build . --config Release
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-${{ matrix.os }}
+        path: build/JsonFileViewer*
