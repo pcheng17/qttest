@@ -14,6 +14,6 @@ FetchContent_MakeAvailable(json)
 
 find_package(Qt6 COMPONENTS Widgets Core Gui REQUIRED)
 
-add_executable(myapp main.cpp MainWindow.cpp)
+add_executable(TextEditor main.cpp MainWindow.cpp)
 
-target_link_libraries(myapp PRIVATE Qt6::Widgets Qt6::Core Qt6::Gui nlohmann_json::nlohmann_json)
+target_link_libraries(TextEditor PRIVATE Qt6::Widgets Qt6::Core Qt6::Gui nlohmann_json::nlohmann_json)
