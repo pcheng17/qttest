@@ -11,11 +11,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [windows-latest, macos-latest]
         include:
           - os: windows-latest
-            qt_version: '6.6.2'
+            artifact_name: windows-app
           - os: macos-latest
-            qt_version: '6.6.2'
+            artifact_name: mac-app
 
     steps:
     - uses: actions/checkout@v2
@@ -23,21 +24,19 @@ jobs:
     - name: Set up Qt environment
       uses: jurplel/install-qt-action@v2
       with:
-        version: ${{ matrix.qt_version }}
+        version: '6.6.2'  # Specify the Qt version
 
-    - name: Create Build Directory
+    - name: Create build directory
       run: mkdir build
 
     - name: Configure CMake
-      working-directory: ./build
-      run: cmake .. -DCMAKE_PREFIX_PATH=${{ env.QT_INSTALL_DIR }}
+      run: cmake -B build
 
     - name: Build
-      working-directory: ./build
-      run: cmake --build . --config Release
+      run: cmake --build build --config Release
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: app-${{ matrix.os }}
-        path: build/TextEditor*
+        name: ${{ matrix.artifact_name }}
+        path: build/TextEditor.exe
