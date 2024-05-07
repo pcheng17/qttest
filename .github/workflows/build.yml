@@ -35,8 +35,28 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
 
-    - name: Upload Artifacts
+    - name: Package application (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        mkdir -p build/dist
+        windeployqt --release --dir build/dist build/Release/TextEditor.exe
+
+    - name: Package application (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        mkdir -p build/dist
+        macdeployqt build/TextEditor.app -dmg
+
+    - name: Upload Artifacts (Windows)
+      if: matrix.os == 'windows-latest'
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifact_name }}
-        path: build/TextEditor*
+        path: build/dist
+
+    - name: Upload Artifacts (macOS)
+      if: matrix.os == 'macos-latest'
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.artifact_name }}
+        path: build/TextEditor.dmg
